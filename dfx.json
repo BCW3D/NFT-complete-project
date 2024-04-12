@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "opend6_backend": {
+      "main": "src/opend6_backend/main.mo",
+      "type": "motoko"
+    },
+    "opend6_frontend": {
+      "dependencies": [
+        "opend6_backend"
+      ],
+      "source": [
+        "src/opend6_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "opend6_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
