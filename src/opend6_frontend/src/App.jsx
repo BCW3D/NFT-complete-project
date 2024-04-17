@@ -1,30 +1,62 @@
-import { useState } from 'react';
-import { opend6_backend } from 'declarations/opend6_backend';
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
+// components
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Discover from "./components/Discover";
+import Minter from "./components/Minter";
+import Gallery from "./components/Gallery";
+import HomeImg from "../../opend6_frontend/public/home-img.png";
+import { Principal } from "@dfinity/principal";
+import { opend6_backend } from "../../declarations/opend6_backend";
+import userId from "./main";
 function App() {
-  const [greeting, setGreeting] = useState('');
+  const canisterId = "47iws-5eaaa-aaaaa-qacfa-cai";
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    opend6_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+  const { state } = useLocation();
+
+  const [nftPrincipal, setNFTprincipal] = useState();
+  const [listedNFTprincipal, setLitedNFTprincipal] = useState();
+
+  const getNFTs = async () => {
+    const ownedNFTs = await opend6_backend.getOwnedNFTs(userId);
+    setNFTprincipal(ownedNFTs);
+
+    const listedNFTs = await opend6_backend.getListedNFTs();
+
+    setLitedNFTprincipal(listedNFTs);
+  };
+
+  useEffect(() => {
+    getNFTs();
+  }, [state]);
 
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div style={{ textAlign: "center" }}>
+      <Header />
+      <Routes>
+        <Route path="/" element={<img src={HomeImg} />} />
+        <Route
+          path="/discover"
+          element={
+            <Discover
+              title="Discover"
+              ids={listedNFTprincipal}
+              role="discover"
+            />
+          }
+        />
+        <Route path="/minter" element={<Minter />} />
+        <Route
+          path="/collection"
+          element={
+            <Gallery title="My NFTs" ids={nftPrincipal} role="collection" />
+          }
+        />
+      </Routes>
+      <Footer />
+    </div>
   );
 }
 
